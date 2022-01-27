@@ -386,6 +386,12 @@ func cmdAdd(args *skel.CmdArgs) (err error) {
 			peer      *netlink.Link
 			tmpIfName string
 		)
+		// add by barr 调用 connector.SetupVeth() 创建 veth pair:
+		//  并且 host 侧网卡命名一般是: lxc + sha256(containerID))，如 lxc123abc；container 侧网卡命名一般是：tmp + maxLen(endpointID, 5)，如 tmp123,
+		//  并且设置：
+		//  设置 /proc/sys/net/ipv4/conf/<veth>/rp_filter = 0
+		//  设置两个网卡的 MTU
+		//  记录两个网卡的 mac 以及 interface name 和 interface index，供第三步创建 Endpoint 对象下发 eBPF 程序使用
 		veth, peer, tmpIfName, err = connector.SetupVeth(ep.ContainerID, int(conf.DeviceMTU), ep)
 		if err != nil {
 			err = fmt.Errorf("unable to set up veth on host side: %s", err)
