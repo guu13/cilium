@@ -405,6 +405,7 @@ func cmdAdd(args *skel.CmdArgs) (err error) {
 			}
 		}()
 
+		//add by barry 移动 tmpxxx 网卡到 container netns，并重命名网卡为 eth0 网卡：
 		if err = netlink.LinkSetNsFd(*peer, int(netNs.Fd())); err != nil {
 			err = fmt.Errorf("unable to move veth pair '%v' to netns: %s", peer, err)
 			return
