@@ -480,7 +480,6 @@ func cmdAdd(args *skel.CmdArgs) (err error) {
 		ep.Addressing.IPV6 = ipam.Address.IPV6
 		ep.Addressing.IPV6ExpirationUUID = ipam.IPV6.ExpirationUUID
 
-		// add by barry  配置容器侧路由
 		ipConfig, routes, err = prepareIP(ep.Addressing.IPV6, true, &state, int(conf.RouteMTU))
 		if err != nil {
 			err = fmt.Errorf("unable to prepare IP addressing for '%s': %s", ep.Addressing.IPV6, err)
@@ -494,7 +493,6 @@ func cmdAdd(args *skel.CmdArgs) (err error) {
 		ep.Addressing.IPV4 = ipam.Address.IPV4
 		ep.Addressing.IPV4ExpirationUUID = ipam.IPV4.ExpirationUUID
 
-		// add by barry  配置容器侧路由
 		ipConfig, routes, err = prepareIP(ep.Addressing.IPV4, false, &state, int(conf.RouteMTU))
 		if err != nil {
 			err = fmt.Errorf("unable to prepare IP addressing for '%s': %s", ep.Addressing.IPV4, err)
@@ -520,8 +518,6 @@ func cmdAdd(args *skel.CmdArgs) (err error) {
 				logger.WithError(err).Warn("unable to enable ipv6 on all interfaces")
 			}
 		}
-
-		// add by barry 配置ip地址 路由 拿到 MAC地址
 		macAddrStr, err = configureIface(ipam, args.IfName, &state)
 		return err
 	}); err != nil {
