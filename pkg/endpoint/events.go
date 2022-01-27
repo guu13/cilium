@@ -50,6 +50,7 @@ func (ev *EndpointRegenerationEvent) Handle(res chan interface{}) {
 
 		regenContext.DoneFunc = doneFunc
 
+		// add by barry 下发 ebpf
 		err = ev.ep.regenerate(ev.regenContext)
 
 		doneFunc()

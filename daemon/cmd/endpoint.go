@@ -493,6 +493,7 @@ func (d *Daemon) createEndpoint(ctx context.Context, owner regeneration.Owner, e
 			return d.errorDuringCreation(ep, err)
 		}
 		if build {
+			//add by barry eBPF 程序的逻辑 regenerate()
 			ep.Regenerate(regenMetadata)
 		}
 	}

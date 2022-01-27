@@ -402,6 +402,9 @@ func (e *Endpoint) regenerate(context *regenerationContext) (retErr error) {
 		e.unlock()
 	}()
 
+	// add by barry eBPF 程序下发 ，
+	// BPF 程序会被下发到宿主机 /var/run/cilium/state 目录中，regenerateBPF() 函数会重写 bpf headers，以及更新 BPF Map。
+	// 更新 BPF Map 很重要，下发到网卡中的 BPF 程序执行逻辑时会去查 BPF Map 数据:
 	revision, stateDirComplete, err = e.regenerateBPF(context)
 	if err != nil {
 		failDir := e.FailedDirectoryPath()
@@ -575,6 +578,7 @@ func (e *Endpoint) Regenerate(regenMetadata *regeneration.ExternalRegenerationMe
 
 	regenContext := ParseExternalRegenerationMetadata(ctx, cFunc, regenMetadata)
 
+	// add by barry ebpf 下发
 	epEvent := eventqueue.NewEvent(&EndpointRegenerationEvent{
 		regenContext: regenContext,
 		ep:           e,

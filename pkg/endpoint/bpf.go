@@ -581,6 +581,7 @@ func (e *Endpoint) regenerateBPF(regenContext *regenerationContext) (revnum uint
 	datapathRegenCtxt.prepareForProxyUpdates(regenContext.parentContext)
 	defer datapathRegenCtxt.completionCancel()
 
+	// add by barry 编译下发前准备
 	headerfileChanged, err = e.runPreCompilationSteps(regenContext)
 
 	// Keep track of the side-effects of the regeneration that need to be
@@ -610,6 +611,7 @@ func (e *Endpoint) regenerateBPF(regenContext *regenerationContext) (revnum uint
 
 	stats.prepareBuild.End(true)
 
+	// add by barry 编译和加载 BPF 程序
 	compilationExecuted, err = e.realizeBPFState(regenContext)
 	if err != nil {
 		return datapathRegenCtxt.epInfoCache.revision, compilationExecuted, err

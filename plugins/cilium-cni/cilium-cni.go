@@ -537,6 +537,11 @@ func cmdAdd(args *skel.CmdArgs) (err error) {
 	}
 
 	// Specify that endpoint must be regenerated synchronously. See GH-4409.
+	//  Cilium 针对每一个 pod 创建对应的 CiliumEndpoint 对象，在这一步会下发 tc eBPF 程序到 pod 网卡上
+	// 客户端 endpoint client endpoint.go#L36-L42
+	// 客户端 endpoint client endpoint_client.go#L430-L465
+	// 服务端 endpoint server put_endpoint_id.go#L35-L64
+	// 服务端 endpoint server endpoint.go#L295-L551
 	ep.SyncBuildEndpoint = true
 	if err = c.EndpointCreate(ep); err != nil {
 		logger.WithError(err).WithFields(logrus.Fields{
