@@ -44,6 +44,7 @@ func (h *postIPAM) Handle(params ipamapi.PostIpamParams) middleware.Responder {
 	if swag.BoolValue(params.Expiration) {
 		expirationTimeout = defaults.IPAMExpiration
 	}
+	// add by barry 供cni 获取 pod IP地址 。
 	ipv4Result, ipv6Result, err := h.daemon.ipam.AllocateNextWithExpiration(family, owner, expirationTimeout)
 	if err != nil {
 		return api.Error(ipamapi.PostIpamFailureCode, err)

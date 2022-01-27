@@ -432,6 +432,8 @@ func cmdAdd(args *skel.CmdArgs) (err error) {
 		defer m.Close()
 	}
 
+	// add by barry  cilium cni 二进制调用 cilium daemon 服务端获取 pod ip，并把该 pod ip 配置到 pod 网卡上:
+	// 调用 cilium daemon IPAM 模块来从本机 pod cidr 子网段随机分配出 pod ip
 	podName := string(cniArgs.K8S_POD_NAMESPACE) + "/" + string(cniArgs.K8S_POD_NAME)
 	ipam, err = c.IPAMAllocate("", podName, true)
 	if err != nil {
@@ -474,6 +476,7 @@ func cmdAdd(args *skel.CmdArgs) (err error) {
 		ep.Addressing.IPV6 = ipam.Address.IPV6
 		ep.Addressing.IPV6ExpirationUUID = ipam.IPV6.ExpirationUUID
 
+		// add by barry  配置容器侧路由
 		ipConfig, routes, err = prepareIP(ep.Addressing.IPV6, true, &state, int(conf.RouteMTU))
 		if err != nil {
 			err = fmt.Errorf("unable to prepare IP addressing for '%s': %s", ep.Addressing.IPV6, err)
@@ -487,6 +490,7 @@ func cmdAdd(args *skel.CmdArgs) (err error) {
 		ep.Addressing.IPV4 = ipam.Address.IPV4
 		ep.Addressing.IPV4ExpirationUUID = ipam.IPV4.ExpirationUUID
 
+		// add by barry  配置容器侧路由
 		ipConfig, routes, err = prepareIP(ep.Addressing.IPV4, false, &state, int(conf.RouteMTU))
 		if err != nil {
 			err = fmt.Errorf("unable to prepare IP addressing for '%s': %s", ep.Addressing.IPV4, err)
@@ -512,6 +516,8 @@ func cmdAdd(args *skel.CmdArgs) (err error) {
 				logger.WithError(err).Warn("unable to enable ipv6 on all interfaces")
 			}
 		}
+
+		// add by barry 配置ip地址 路由 拿到 MAC地址
 		macAddrStr, err = configureIface(ipam, args.IfName, &state)
 		return err
 	}); err != nil {
