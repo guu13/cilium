@@ -279,6 +279,9 @@ func datapathHasMultipleMasterDevices() bool {
 	return option.Config.DatapathMode != datapathOption.DatapathModeIpvlan
 }
 
+// add by barry 假设容器中 ping clusterip-service-ip，出发走到另外一台机器的pod容器，
+// 会经过 from-container -> from-host -> to-netdev -> from-netdev -> to-host BPF 程序。
+// 主要方法： reloadHostDatapath replaceDatapath
 func (l *Loader) reloadDatapath(ctx context.Context, ep datapath.Endpoint, dirs *directoryInfo) error {
 	// Replace the current program
 	objPath := path.Join(dirs.Output, endpointObj)

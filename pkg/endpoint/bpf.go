@@ -693,6 +693,11 @@ func (e *Endpoint) realizeBPFState(regenContext *regenerationContext) (compilati
 		}
 
 		// Compile and install BPF programs for this endpoint
+		// add by barry Cilium 代码提供了 Loader 对象来编译和下发 BPF 程序
+		// CompileAndLoad() CompileOrLoad() 编译 加载
+		// reloadDatapath() 加载
+		// reloadHostDatapath() : 下发 tc eBPF 程序到 cilium_host/eth0 网卡
+		// replaceDatapath() : 下发 tc eBPF 程序到 pod 宿主机侧网卡
 		if datapathRegenCtxt.regenerationLevel == regeneration.RegenerateWithDatapathRebuild {
 			err = e.owner.Datapath().Loader().CompileAndLoad(datapathRegenCtxt.completionCtx, datapathRegenCtxt.epInfoCache, &stats.datapathRealization)
 			e.getLogger().WithError(err).Info("Regenerated endpoint BPF program")
