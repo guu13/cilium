@@ -200,11 +200,13 @@ func (l *Loader) reloadHostDatapath(ctx context.Context, ep datapath.Endpoint, o
 	directions := make([]string, 2, nbInterfaces)
 	objPaths := make([]string, 2, nbInterfaces)
 	interfaceNames := make([]string, 2, nbInterfaces)
+	// add by barry from-host to-host
 	symbols[0], symbols[1] = symbolToHostEp, symbolFromHostEp
 	directions[0], directions[1] = dirIngress, dirEgress
 	objPaths[0], objPaths[1] = objPath, objPath
 	interfaceNames[0], interfaceNames[1] = ep.InterfaceName(), ep.InterfaceName()
 
+	// add by barry , 不是vlan 就加载 cilium_net 的bpf程序 bpf_host_cilium_net.o
 	if datapathHasMultipleMasterDevices() {
 		if _, err := netlink.LinkByName(defaults.SecondHostDevice); err != nil {
 			log.WithError(err).WithField("device", defaults.SecondHostDevice).Error("Link does not exist")
@@ -214,6 +216,7 @@ func (l *Loader) reloadHostDatapath(ctx context.Context, ep datapath.Endpoint, o
 			symbols = append(symbols, symbolToHostEp)
 			directions = append(directions, dirIngress)
 			secondDevObjPath := path.Join(ep.StateDir(), hostEndpointPrefix+"_"+defaults.SecondHostDevice+".o")
+			// add by barry : to do
 			if err := patchHostNetdevDatapath(ep, objPath, secondDevObjPath, defaults.SecondHostDevice, nil); err != nil {
 				return err
 			}
@@ -223,6 +226,7 @@ func (l *Loader) reloadHostDatapath(ctx context.Context, ep datapath.Endpoint, o
 
 	bpfMasqIPv4Addrs := node.GetMasqIPv4AddrsWithDevices()
 
+	//add by barry ,  bpf_netdev_xxx.o , from-netdev , to-netdev(EnableNodePort , EnableHostFirewall)
 	for _, device := range option.Config.Devices {
 		if _, err := netlink.LinkByName(device); err != nil {
 			log.WithError(err).WithField("device", device).Warn("Link does not exist")
