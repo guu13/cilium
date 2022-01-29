@@ -292,6 +292,9 @@ func (l *Loader) reloadDatapath(ctx context.Context, ep datapath.Endpoint, dirs 
 
 	if ep.IsHost() {
 		objPath = path.Join(dirs.Output, hostEndpointObj)
+		// add by barry 下发host 程序
+		// cilium_host: 下发 bpf_host.c to-host 程序, 下发 bpf_host.c from-host,
+		// cni使用的主机网络接口： 下发 bpf_host.c from-netdev,下发 bpf_host.c to-netdev 程序
 		if err := l.reloadHostDatapath(ctx, ep, objPath); err != nil {
 			return err
 		}
@@ -309,6 +312,7 @@ func (l *Loader) reloadDatapath(ctx context.Context, ep datapath.Endpoint, dirs 
 			return err
 		}
 	} else {
+		// 下发容器主机侧网络 lxcxxxx ebpf程序
 		if err := replaceDatapath(ctx, ep.InterfaceName(), objPath, symbolFromEndpoint, dirIngress, false, ""); err != nil {
 			scopedLog := ep.Logger(Subsystem).WithFields(logrus.Fields{
 				logfields.Path: objPath,
