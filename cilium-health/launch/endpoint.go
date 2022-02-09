@@ -274,6 +274,8 @@ func LaunchAsEndpoint(baseCtx context.Context,
 
 	switch option.Config.DatapathMode {
 	case datapathOption.DatapathModeVeth:
+		// add by barry kubectl exec -it -n kube-system cilium-g2lwk -- ip netns exec cilium-health ip addr
+		//  lxc_health@if15 <--> cilium@if16
 		_, epLink, err := connector.SetupVethWithNames(vethName, epIfaceName, mtuConfig.GetDeviceMTU(), info)
 		if err != nil {
 			return nil, fmt.Errorf("Error while creating veth: %s", err)
