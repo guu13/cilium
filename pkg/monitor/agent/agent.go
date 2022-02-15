@@ -98,6 +98,7 @@ func (a *Agent) AttachToEventsMap(nPages int) error {
 		return errors.New("events map already attached")
 	}
 
+	// add by barry 断言我们实际上可以连接监视器 cilium_events
 	// assert that we can actually connect the monitor
 	path := oldBPF.MapPath(eventsMapName)
 	eventsMap, err := ebpf.LoadPinnedMap(path, nil)
@@ -112,6 +113,7 @@ func (a *Agent) AttachToEventsMap(nPages int) error {
 		Pagesize: int64(os.Getpagesize()),
 	}
 
+	// add by barry , 如果我们已经有订阅者，则启动 perf 阅读器
 	// start the perf reader if we already have subscribers
 	if a.hasSubscribersLocked() {
 		a.startPerfReaderLocked()
@@ -188,6 +190,7 @@ func (a *Agent) startPerfReaderLocked() {
 // RegisterNewListener adds the new MonitorListener to the global list.
 // It also spawns a singleton goroutine to read and distribute the events.
 func (a *Agent) RegisterNewListener(newListener listener.MonitorListener) {
+	// add by barry 将新的 MonitorListener 添加到全局列表中。它还生成一个单例 goroutine 来读取和分发事件。
 	if a == nil {
 		return
 	}
@@ -292,6 +295,7 @@ func (a *Agent) RemoveConsumer(mc consumer.MonitorConsumer) {
 // Poll call but assumes enough events are generated that these blocks are
 // short.
 func (a *Agent) handleEvents(stopCtx context.Context) {
+	// add by barry , 从 perf 缓冲区中读取事件并处理它们。
 	scopedLog := log.WithField(logfields.StartTime, time.Now())
 	scopedLog.Info("Beginning to read perf buffer")
 	defer scopedLog.Info("Stopped reading perf buffer")
@@ -340,7 +344,7 @@ func (a *Agent) handleEvents(stopCtx context.Context) {
 func (a *Agent) processPerfRecord(scopedLog *logrus.Entry, record perf.Record) {
 	a.Lock()
 	defer a.Unlock()
-
+	// add by barry 处理来自 cilium bpf数据路径的记录并将其发送到任何注册订阅者
 	if record.LostSamples > 0 {
 		a.MonitorStatus.Lost += int64(record.LostSamples)
 		a.notifyPerfEventLostLocked(record.LostSamples, record.CPU)

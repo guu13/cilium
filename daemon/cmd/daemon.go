@@ -893,6 +893,7 @@ func NewDaemon(ctx context.Context, cancel context.CancelFunc, epMgr *endpointma
 		return nil, restoredEndpoints, err
 	}
 
+	// add by barry , 为了输出 node 的 cilium  event  。 client连接获取 event 。
 	// We can only attach the monitor agent once cilium_event has been set up.
 	if option.Config.RunMonitorAgent {
 		err = d.monitorAgent.AttachToEventsMap(defaults.MonitorBufferPages)

@@ -875,6 +875,7 @@ to_host:
 
 pass_to_stack:
 #ifdef ENABLE_ROUTING
+	//add by barry ipv4_l3() 封包或者进行主机路由，设置 ttl 以及存储 src/dst mac 地址
 	ret = ipv4_l3(ctx, l3_off, NULL, (__u8 *) &router_mac.addr, ip4);
 	if (unlikely(ret != CTX_ACT_OK))
 		return ret;
@@ -919,6 +920,9 @@ declare_tailcall_if(__or3(is_defined(ENABLE_IPV4), is_defined(ENABLE_IPV6),
 			  is_defined(DEBUG)), CILIUM_CALL_IPV4_FROM_LXC)
 int tail_handle_ipv4(struct __ctx_buff *ctx)
 {
+	// 看看目标地址是否是 service ip，如果是则从 BPF Map 中找出一个 pod 作为目标地址，即实现了 service 负载均衡
+	// policy_can_egress4() 查看是否需要走 network policy，
+	// ipv4_l3() 封包或者进行主机路由，设置 ttl 以及存储 src/dst mac 地址
 	__u32 dst_id = 0;
 	int ret = handle_ipv4_from_lxc(ctx, &dst_id);
 

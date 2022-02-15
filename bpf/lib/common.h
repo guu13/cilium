@@ -114,6 +114,7 @@ union v6addr {
 	__u8 addr[16];
 } __packed;
 
+// add by barry 只支持 Ethernet II 协议。 
 static __always_inline bool validate_ethertype(struct __ctx_buff *ctx,
 					       __u16 *proto)
 {

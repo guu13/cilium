@@ -286,6 +286,9 @@ int tail_handle_ipv4(struct __ctx_buff *ctx)
 /* Attached to the ingress of cilium_vxlan/cilium_geneve to execute on packets
  * entering the node via the tunnel.
  */
+// add by barry cilium支持 vxlan 和 geneve 两种overlay隧道， 会在node上创建cilium_vxlan或cilium_geneve设备，
+// 进和出的流量，要通过这两种设备先封包和解包 。 
+//  进入节点解包，from-overlay处理 ；  离开节点to-overlay处理，封包
 __section("from-overlay")
 int from_overlay(struct __ctx_buff *ctx)
 {
