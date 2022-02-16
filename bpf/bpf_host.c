@@ -1101,7 +1101,7 @@ out:
 					      METRIC_EGRESS);
 #endif
 
-	printk("to-netdev is attached as a tc egress filter TRACE_TO_NETWORK\n")
+	printk("to-netdev is attached as a tc egress filter TRACE_TO_NETWORK\n");
 	send_trace_notify(ctx, TRACE_TO_NETWORK, src_id, 0, 0,
 			  0, 0, monitor);
 
