@@ -1080,7 +1080,7 @@ out:
 	 (defined(ENABLE_DSR) && defined(ENABLE_DSR_HYBRID)) || \
 	 defined(ENABLE_MASQUERADE) || \
 	 defined(ENABLE_EGRESS_GATEWAY))
-	printk("to-netdev is attached as a tc egress filter ENABLE_NODEPORT\n")
+	printk("to-netdev is attached as a tc egress filter ENABLE_NODEPORT\n");
 	if ((ctx->mark & MARK_MAGIC_SNAT_DONE) != MARK_MAGIC_SNAT_DONE) {
 		/*
 		 * handle_nat_fwd tail calls in the majority of cases,
