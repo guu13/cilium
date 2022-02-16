@@ -13,7 +13,7 @@ gops_version="v0.3.22"
 mkdir -p /go/src/github.com/google
 cd /go/src/github.com/google
 
-git clone https://github.com/google/gops.git
+git clone https://github.91chi.fun//https://github.com/google/gops.git
 cd gops
 
 git checkout -b "${gops_version}" "${gops_version}"

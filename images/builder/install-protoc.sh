@@ -11,7 +11,7 @@ set -o nounset
 protoc_version="3.18.1"
 
 curl --fail --show-error --silent --location \
-  "https://github.com/protocolbuffers/protobuf/releases/download/v${protoc_version}/protoc-${protoc_version}-linux-x86_64.zip" \
+  "https://github.91chi.fun//https://github.com/protocolbuffers/protobuf/releases/download/v${protoc_version}/protoc-${protoc_version}-linux-x86_64.zip" \
     --output /tmp/protoc.zip
 
 unzip /tmp/protoc.zip -x readme.txt -d /usr/local

@@ -31,7 +31,7 @@ hubble_sha256=()
 for arch in amd64 arm64 ; do
   tmpout="$(mktemp)"
   curl --fail --show-error --silent --location \
-    "https://github.com/cilium/hubble/releases/download/v${hubble_version}/hubble-linux-${arch}.tar.gz.sha256sum" \
+    "https://github.91chi.fun//https://github.com/cilium/hubble/releases/download/v${hubble_version}/hubble-linux-${arch}.tar.gz.sha256sum" \
     --output "${tmpout}"
   read -ra sha256 < "${tmpout}"
   rm -f "${tmpout}"
