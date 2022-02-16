@@ -1029,6 +1029,7 @@ int to_netdev(struct __ctx_buff *ctx __maybe_unused)
 	}
 
 #ifdef ENABLE_HOST_FIREWALL
+	printk("to-netdev is attached as a tc egress filter ENABLE_HOST_FIREWALL\n");
 	if (!proto && !validate_ethertype(ctx, &proto)) {
 		ret = DROP_UNSUPPORTED_L2;
 		goto out;
@@ -1064,6 +1065,7 @@ out:
 #endif /* ENABLE_HOST_FIREWALL */
 
 #if defined(ENABLE_BANDWIDTH_MANAGER)
+	printk("to-netdev is attached as a tc egress filter ENABLE_BANDWIDTH_MANAGER\n");
 	ret = edt_sched_departure(ctx);
 	/* No send_drop_notify_error() here given we're rate-limiting. */
 	if (ret == CTX_ACT_DROP) {
@@ -1078,6 +1080,7 @@ out:
 	 (defined(ENABLE_DSR) && defined(ENABLE_DSR_HYBRID)) || \
 	 defined(ENABLE_MASQUERADE) || \
 	 defined(ENABLE_EGRESS_GATEWAY))
+	printk("to-netdev is attached as a tc egress filter ENABLE_NODEPORT\n")
 	if ((ctx->mark & MARK_MAGIC_SNAT_DONE) != MARK_MAGIC_SNAT_DONE) {
 		/*
 		 * handle_nat_fwd tail calls in the majority of cases,
@@ -1091,6 +1094,7 @@ out:
 	}
 #endif
 #ifdef ENABLE_HEALTH_CHECK
+	printk("to-netdev is attached as a tc egress filter ENABLE_HEALTH_CHECK\n")
 	ret = lb_handle_health(ctx);
 	if (IS_ERR(ret))
 		return send_drop_notify_error(ctx, 0, ret, CTX_ACT_DROP,
