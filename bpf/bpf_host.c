@@ -1075,16 +1075,6 @@ out:
 	}
 #endif
 
-	struct {
-		__be16 sport;
-		__be16 dport;
-	} l4hdr;
-	__u64 off;
-	if (ctx_load_bytes(ctx, off, &l4hdr, sizeof(l4hdr)) > 0)
-	{
-		printk("to-netdev is attached as a tc egress filter srcport:%u, dscport:%u\n", bpf_ntohs(l4hdr.sport), bpf_ntohs(l4hdr.dport));
-	}
-
 #if defined(ENABLE_NODEPORT) && \
 	(!defined(ENABLE_DSR) || \
 	 (defined(ENABLE_DSR) && defined(ENABLE_DSR_HYBRID)) || \

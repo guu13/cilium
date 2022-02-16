@@ -513,7 +513,7 @@ static __always_inline __maybe_unused int snat_v4_process(struct __ctx_buff *ctx
 	struct {
 		__be16 sport;
 		__be16 dport;
-	} l4hdr;
+	} l4hdr, l4hdr2;
 	bool icmp_echoreply = false;
 	__u64 off;
 	int ret;
@@ -530,6 +530,8 @@ static __always_inline __maybe_unused int snat_v4_process(struct __ctx_buff *ctx
 	off = ((void *)ip4 - data) + ipv4_hdrlen(ip4);
 	switch (tuple.nexthdr) {
 	case IPPROTO_TCP:
+		if (ctx_load_bytes(ctx, off, &l4hdr2, sizeof(l4hdr2)) > 0)
+			printk("to-netdev is attached as a tc egress filter srcport:%u, dscport:%u\n", bpf_ntohs(l4hdr.sport), bpf_ntohs(l4hdr.dport));
 	case IPPROTO_UDP:
 		if (ctx_load_bytes(ctx, off, &l4hdr, sizeof(l4hdr)) < 0)
 			return DROP_INVALID;
