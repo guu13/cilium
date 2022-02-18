@@ -47,6 +47,8 @@ int bpf_redir_proxy(struct sk_msg_md *msg)
 	__u32 dst_id = 0;
 	int verdict;
 
+	printk("bpf sk_msg begin \n");
+
 	sk_msg_extract4_key(msg, &key);
 
 	/* Currently, pulling dstIP out of endpoint

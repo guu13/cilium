@@ -1104,4 +1104,53 @@ ct_delete6(const void *map __maybe_unused,
 }
 #endif
 
+
+static __always_inline __maybe_unused void
+trace_4_test(struct  __ctx_buff *ctx, bool iflag )
+{
+	struct iphdr *ip4;
+	struct {
+		__be16 sport;
+		__be16 dport;
+	} l4hdr;
+	__u64 off;
+
+
+	/* data */
+	void *data = ctx_data(ctx);
+	void *data_end = ctx_data_end(ctx);
+	struct ethhdr *eth = data;
+
+	if (data + ETH_HLEN > data_end)
+		return ;
+	
+	// IP proto
+	if (bpf_ntohs(eth->h_proto) != ETH_P_IP)
+		return;
+
+	if (!revalidate_data(ctx, &data, &data_end, &ip4))
+		return ;
+
+	if(ip4->protocol != IPPROTO_TCP && ip4->protocol != IPPROTO_UDP)
+		return;
+
+	off = ((void *)ip4 - data) + ipv4_hdrlen(ip4);
+	if (ctx_load_bytes(ctx, off, &l4hdr, sizeof(l4hdr)) < 0)
+		return ;
+
+	if(iflag)
+	{
+		// ip4->saddr ;  ip4->daddr;
+		printk("ingress srcip:%u, desip:%u\n", bpf_htonl(ip4->saddr), bpf_htonl(ip4->daddr));
+		printk("ingress srcport:%u, desport:%u\n", bpf_ntohs(l4hdr.sport), bpf_ntohs(l4hdr.dport));
+	}
+	else
+	{
+		printk("egress srcip:%u, desip:%u\n", bpf_htonl(ip4->saddr), bpf_htonl(ip4->daddr));
+		printk("egress  srcport:%u, desport:%u\n", bpf_ntohs(l4hdr.sport), bpf_ntohs(l4hdr.dport));
+	}
+	  
+};
+
+
 #endif /* __LIB_NAT__ */

@@ -259,7 +259,9 @@ sock4_wildcard_lookup(struct lb4_key *key __maybe_unused,
 	 */
 	if (in_hostns && is_v4_loopback(key->address))
 		goto wildcard_lookup;
-
+	
+	//add by barry 如果目的地址是集群主机的地址，按service处理， 目的ip主机down了也能访问。
+	printk("sock4_wildcard_lookup:%u, port:%u, \n", bpf_htonl(key->address), bpf_htons(key->dport));
 	info = ipcache_lookup4(&IPCACHE_MAP, key->address, V4_CACHE_KEY_LEN);
 	if (info != NULL && (info->sec_label == HOST_ID ||
 	    (include_remote_hosts && identity_is_remote_node(info->sec_label))))
@@ -267,6 +269,7 @@ sock4_wildcard_lookup(struct lb4_key *key __maybe_unused,
 
 	return NULL;
 wildcard_lookup:
+	printk("sock4_wildcard_lookup goto wildcard_lookup\n");
 	key->address = 0;
 	return lb4_lookup_service(key, true);
 }
@@ -282,11 +285,18 @@ sock4_wildcard_lookup_full(struct lb4_key *key __maybe_unused,
 	svc = sock4_wildcard_lookup(key, true, false, in_hostns);
 	if (svc && !lb4_svc_is_nodeport(svc))
 		svc = NULL;
+
+	if(svc)
+		printk("sock4_wildcard_lookup_full nodeport lb4_svc_is_nodeport\n");
+
 	if (!svc) {
 		svc = sock4_wildcard_lookup(key, false, true,
 					    in_hostns);
 		if (svc && !lb4_svc_is_hostport(svc))
 			svc = NULL;
+		
+		if(svc)
+			printk("sock4_wildcard_lookup_full hostport \n");
 	}
 #endif /* ENABLE_NODEPORT */
 	return svc;
@@ -382,6 +392,8 @@ static __always_inline int __sock4_xlate_fwd(struct bpf_sock_addr *ctx,
 	if (sock4_skip_xlate(svc, orig_key.address))
 		return -EPERM;
 
+	//printk("__sock4_xlate_fwd %u, %u, %u \n", svc-count, svc-flag, key.address);
+
 	if (lb4_svc_is_affinity(svc)) {
 		/* Note, for newly created affinity entries there is a
 		 * small race window. Two processes on two different
@@ -465,10 +477,12 @@ __sock4_health_fwd(struct bpf_sock_addr *ctx __maybe_unused)
 __section("cgroup/connect4")
 int sock4_connect(struct bpf_sock_addr *ctx)
 {
+	printk("cgroup/connect4 ip:%u, port:%u\n", bpf_htonl(ctx->user_ip4), bpf_htons(ctx->user_port));
 	if (sock_is_health_check(ctx))
 		return __sock4_health_fwd(ctx);
-
+	printk("cgroup/connect4 ip:%u, port:%u, __sock4_health_fwd\n", bpf_htonl(ctx->user_ip4), bpf_htons(ctx->user_port));
 	__sock4_xlate_fwd(ctx, ctx, false);
+	printk("cgroup/connect4 ip:%u, port:%u , __sock4_xlate_fwd\n", bpf_htonl(ctx->user_ip4), bpf_htons(ctx->user_port));
 	return SYS_PROCEED;
 }
 
@@ -509,6 +523,8 @@ static __always_inline int __sock4_post_bind(struct bpf_sock *ctx,
 __section("cgroup/post_bind4")
 int sock4_post_bind(struct bpf_sock *ctx)
 {
+	printk("cgroup/post_bind4\n");
+
 	if (__sock4_post_bind(ctx, ctx) < 0)
 		return SYS_REJECT;
 
@@ -548,6 +564,8 @@ static __always_inline int __sock4_pre_bind(struct bpf_sock_addr *ctx,
 __section("cgroup/bind4")
 int sock4_pre_bind(struct bpf_sock_addr *ctx)
 {
+	printk("cgroup/post_bind4 ip:%u, port:%u\n", bpf_htonl(ctx->user_ip4), bpf_htons(ctx->user_port));
+
 	int ret = SYS_PROCEED;
 
 	if (!sock_proto_enabled(ctx->protocol) ||
@@ -600,6 +618,8 @@ static __always_inline int __sock4_xlate_rev(struct bpf_sock_addr *ctx,
 __section("cgroup/sendmsg4")
 int sock4_sendmsg(struct bpf_sock_addr *ctx)
 {
+	printk("cgroup/sendmsg4 ip:%u, port:%u\n", bpf_htonl(ctx->user_ip4), bpf_htons(ctx->user_port));
+
 	__sock4_xlate_fwd(ctx, ctx, true);
 	return SYS_PROCEED;
 }
@@ -607,6 +627,8 @@ int sock4_sendmsg(struct bpf_sock_addr *ctx)
 __section("cgroup/recvmsg4")
 int sock4_recvmsg(struct bpf_sock_addr *ctx)
 {
+	printk("cgroup/recvmsg4 ip:%u, port:%u\n", bpf_htonl(ctx->user_ip4), bpf_htons(ctx->user_port));
+
 	__sock4_xlate_rev(ctx, ctx);
 	return SYS_PROCEED;
 }
@@ -614,6 +636,8 @@ int sock4_recvmsg(struct bpf_sock_addr *ctx)
 __section("cgroup/getpeername4")
 int sock4_getpeername(struct bpf_sock_addr *ctx)
 {
+	printk("cgroup/getpeername4 ip:%u, port:%u\n", bpf_htonl(ctx->user_ip4), bpf_htons(ctx->user_port));
+
 	__sock4_xlate_rev(ctx, ctx);
 	return SYS_PROCEED;
 }

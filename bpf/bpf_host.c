@@ -970,6 +970,9 @@ int from_netdev(struct __ctx_buff *ctx)
 {
 	__u32 __maybe_unused vlan_id;
 
+	printk("from-netdev ingress from physical devices\n");
+	trace_4_test(ctx, true);
+
 	/* Filter allowed vlan id's and pass them back to kernel.
 	 */
 	if (ctx->vlan_present) {
@@ -993,6 +996,9 @@ int from_netdev(struct __ctx_buff *ctx)
 __section("from-host")
 int from_host(struct __ctx_buff *ctx)
 {
+	printk("from-host egress from cilium_host devices\n");
+	trace_4_test(ctx, false);
+
 	/* Traffic from the host ns going through cilium_host device must
 	 * not be subject to EDT rate-limiting.
 	 */
@@ -1014,6 +1020,9 @@ int to_netdev(struct __ctx_buff *ctx __maybe_unused)
 	__u32 monitor = 0;
 	__u32 __maybe_unused vlan_id;
 	int ret = CTX_ACT_OK;
+
+	printk("to-netdev egress from physical devices\n");
+	trace_4_test(ctx, false);
 
 	/* Filter allowed vlan id's and pass them back to kernel.
 	 */
@@ -1121,6 +1130,9 @@ int to_host(struct __ctx_buff *ctx)
 	int ret = CTX_ACT_OK;
 	bool traced = false;
 	__u32 src_id = 0;
+
+	printk("to-host ingress from cilium_host devices\n");
+	trace_4_test(ctx, true);
 
 	if ((magic & MARK_MAGIC_HOST_MASK) == MARK_MAGIC_ENCRYPT) {
 		ctx->mark = magic; /* CB_ENCRYPT_MAGIC */

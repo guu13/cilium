@@ -1057,14 +1057,18 @@ struct lb4_service *lb4_lookup_service(struct lb4_key *key,
 	key->backend_slot = 0;
 	svc = map_lookup_elem(&LB4_SERVICES_MAP_V2, key);
 	if (svc) {
+		printk("lb4_lookup_service svc 1 \n");
 		if (!scope_switch || !lb4_svc_is_local_scope(svc))
 			return svc->count ? svc : NULL;
+
+		printk("lb4_lookup_service svc 2 \n");
+
 		key->scope = LB_LOOKUP_SCOPE_INT;
 		svc = map_lookup_elem(&LB4_SERVICES_MAP_V2, key);
 		if (svc && svc->count)
 			return svc;
 	}
-
+	printk("lb4_lookup_service return NULL \n");
 	return NULL;
 }
 
