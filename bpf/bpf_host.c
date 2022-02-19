@@ -1132,7 +1132,7 @@ int to_host(struct __ctx_buff *ctx)
 	__u32 src_id = 0;
 
 	printk("to-host ingress from cilium_host devices\n");
-	trace_4_test(ctx, true);
+	trace_4_test2(ctx, true);
 
 	if ((magic & MARK_MAGIC_HOST_MASK) == MARK_MAGIC_ENCRYPT) {
 		ctx->mark = magic; /* CB_ENCRYPT_MAGIC */
