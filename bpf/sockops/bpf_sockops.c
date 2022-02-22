@@ -134,7 +134,7 @@ int bpf_sockmap(struct bpf_sock_ops *skops)
 	family = skops->family;
 	op = skops->op;
 
-	printk("bpf sockops begin \n");
+	barry_printk("bpf sockops begin \n");
 
 	switch (op) {
 	case BPF_SOCK_OPS_PASSIVE_ESTABLISHED_CB:

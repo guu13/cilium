@@ -993,10 +993,10 @@ int handle_xgress(struct __ctx_buff *ctx)
 	//trace_4_test(ctx, false);
 
 	bpf_clear_meta(ctx);
-	printk("from-container egress from container veth devices bpf_clear_meta\n");
+	//printk("from-container egress from container veth devices bpf_clear_meta\n");
 	reset_queue_mapping(ctx);
 	
-	printk("from-container egress from container veth devices reset_queue_mapping\n");
+	//printk("from-container egress from container veth devices reset_queue_mapping\n");
 
 	send_trace_notify(ctx, TRACE_FROM_LXC, SECLABEL, 0, 0, 0, 0,
 			  TRACE_PAYLOAD_LEN);
@@ -1007,7 +1007,7 @@ int handle_xgress(struct __ctx_buff *ctx)
 		goto out;
 	}
 
-	printk("from-container egress from container veth devices validate_ethertype\n");
+	//printk("from-container egress from container veth devices validate_ethertype\n");
 
 	switch (proto) {
 #ifdef ENABLE_IPV6

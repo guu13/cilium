@@ -262,4 +262,12 @@ void cilium_dbg_capture2(struct __ctx_buff *ctx __maybe_unused,
 }
 
 #endif
+
+# define barry_printk(fmt, ...)					\
+		({						\
+			const char ____fmt[] = fmt;		\
+			trace_printk(____fmt, sizeof(____fmt),	\
+				     ##__VA_ARGS__);		\
+		})
+		
 #endif /* __LIB_DBG__ */
