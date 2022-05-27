@@ -63,8 +63,13 @@ int bpf_redir_proxy(struct sk_msg_md *msg)
 		dst_id = WORLD_ID;
 
 	verdict = policy_sk_egress(dst_id, key.sip4, key.dport);
-	if (verdict >= 0)
+	if (verdict >= 0){
+		barry_printk("2 bpf_redir_proxy srcip:%u, desip:%u\n", bpf_htonl(	key.sip4), bpf_htonl(key.dip4));
+		barry_printk("2 bpf_redir_proxy srcport:%u, desport:%u\n", bpf_ntohs(key.sport), bpf_ntohs(key.dport));
+
 		msg_redirect_hash(msg, &SOCK_OPS_MAP, &key, flags);
+	}
+		
 	return SK_PASS;
 }
 

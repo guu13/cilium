@@ -61,6 +61,8 @@ static inline void bpf_sock_ops_ipv4(struct bpf_sock_ops *skops)
 	struct sock_key key = {};
 	int verdict;
 
+	barry_printk("test bpf_sock_ops_ipv4 begin \n");
+
 	sk_extract4_key(skops, &key);
 
 	/* If endpoint a service use L4/L3 stack for now. These can be
@@ -114,6 +116,9 @@ static inline void bpf_sock_ops_ipv4(struct bpf_sock_ops *skops)
 	key.sip4 = dip4;
 	key.sport = dport;
 
+	barry_printk("2 bpf_sock_ops_ipv4 srcip:%u, desip:%u\n", bpf_htonl(	key.sip4), bpf_htonl(key.dip4));
+	barry_printk("2 bpf_sock_ops_ipv4 srcport:%u, desport:%u\n", bpf_ntohs(key.sport), bpf_ntohs(key.dport));
+
 	sock_hash_update(skops, &SOCK_OPS_MAP, &key, BPF_NOEXIST);
 }
 #endif /* ENABLE_IPV4 */
@@ -134,7 +139,7 @@ int bpf_sockmap(struct bpf_sock_ops *skops)
 	family = skops->family;
 	op = skops->op;
 
-	barry_printk("bpf sockops begin \n");
+	barry_printk("test bpf sockops begin \n");
 
 	switch (op) {
 	case BPF_SOCK_OPS_PASSIVE_ESTABLISHED_CB:

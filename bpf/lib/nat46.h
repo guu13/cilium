@@ -271,7 +271,7 @@ static __always_inline int ipv4_to_ipv6(struct __ctx_buff *ctx, struct iphdr *ip
 
 	if (ctx_change_proto(ctx, bpf_htons(ETH_P_IPV6), 0) < 0) {
 #ifdef DEBUG_NAT46
-		printk("v46 NAT: ctx_modify failed\n");
+		barry_printk("v46 NAT: ctx_modify failed\n");
 #endif
 		return DROP_WRITE_ERROR;
 	}
@@ -306,7 +306,7 @@ static __always_inline int ipv4_to_ipv6(struct __ctx_buff *ctx, struct iphdr *ip
 		return DROP_CSUM_L4;
 
 #ifdef DEBUG_NAT46
-	printk("v46 NAT: nh_off %d, csum_off %d\n", nh_off, csum_off);
+	barry_printk("v46 NAT: nh_off %d, csum_off %d\n", nh_off, csum_off);
 #endif
 	return 0;
 }
@@ -350,7 +350,7 @@ static __always_inline int ipv6_to_ipv4(struct __ctx_buff *ctx, int nh_off,
 
 	if (ctx_change_proto(ctx, bpf_htons(ETH_P_IP), 0) < 0) {
 #ifdef DEBUG_NAT46
-		printk("v46 NAT: ctx_modify failed\n");
+		barry_printk("v46 NAT: ctx_modify failed\n");
 #endif
 		return DROP_WRITE_ERROR;
 	}

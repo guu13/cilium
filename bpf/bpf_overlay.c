@@ -295,7 +295,7 @@ int from_overlay(struct __ctx_buff *ctx)
 	__u16 proto;
 	int ret;
 
-	printk("from-overlay begin \n");
+	barry_printk("from-overlay begin \n");
 	bpf_clear_meta(ctx);
 	bpf_skip_nodeport_clear(ctx);
 
@@ -354,7 +354,7 @@ int to_overlay(struct __ctx_buff *ctx)
 {
 	int ret;
 
-	printk("to-overlay begin \n");
+	barry_printk("to-overlay begin \n");
 	ret = encap_remap_v6_host_address(ctx, true);
 	if (unlikely(ret < 0))
 		goto out;

@@ -970,7 +970,7 @@ int from_netdev(struct __ctx_buff *ctx)
 {
 	__u32 __maybe_unused vlan_id;
 
-	printk("from-netdev ingress from physical devices\n");
+	barry_printk("from-netdev ingress from physical devices\n");
 	trace_4_test(ctx, true);
 
 	/* Filter allowed vlan id's and pass them back to kernel.
@@ -996,7 +996,7 @@ int from_netdev(struct __ctx_buff *ctx)
 __section("from-host")
 int from_host(struct __ctx_buff *ctx)
 {
-	printk("from-host egress from cilium_host devices\n");
+	barry_printk("from-host egress from cilium_host devices\n");
 	trace_4_test(ctx, false);
 
 	/* Traffic from the host ns going through cilium_host device must
@@ -1021,7 +1021,7 @@ int to_netdev(struct __ctx_buff *ctx __maybe_unused)
 	__u32 __maybe_unused vlan_id;
 	int ret = CTX_ACT_OK;
 
-	printk("to-netdev egress from physical devices\n");
+	barry_printk("to-netdev egress from physical devices\n");
 	trace_4_test(ctx, false);
 
 	/* Filter allowed vlan id's and pass them back to kernel.
@@ -1038,7 +1038,7 @@ int to_netdev(struct __ctx_buff *ctx __maybe_unused)
 	}
 
 #ifdef ENABLE_HOST_FIREWALL
-	//printk("to-netdev is attached as a tc egress filter ENABLE_HOST_FIREWALL\n");
+	//barry_printk("to-netdev is attached as a tc egress filter ENABLE_HOST_FIREWALL\n");
 	if (!proto && !validate_ethertype(ctx, &proto)) {
 		ret = DROP_UNSUPPORTED_L2;
 		goto out;
@@ -1074,7 +1074,7 @@ out:
 #endif /* ENABLE_HOST_FIREWALL */
 
 #if defined(ENABLE_BANDWIDTH_MANAGER)
-	//printk("to-netdev is attached as a tc egress filter ENABLE_BANDWIDTH_MANAGER\n");
+	//barry_printk("to-netdev is attached as a tc egress filter ENABLE_BANDWIDTH_MANAGER\n");
 	ret = edt_sched_departure(ctx);
 	/* No send_drop_notify_error() here given we're rate-limiting. */
 	if (ret == CTX_ACT_DROP) {
@@ -1089,9 +1089,9 @@ out:
 	 (defined(ENABLE_DSR) && defined(ENABLE_DSR_HYBRID)) || \
 	 defined(ENABLE_MASQUERADE) || \
 	 defined(ENABLE_EGRESS_GATEWAY))
-	//printk("to-netdev is attached as a tc egress filter ENABLE_NODEPORT1\n");
+	//barry_printk("to-netdev is attached as a tc egress filter ENABLE_NODEPORT1\n");
 	if ((ctx->mark & MARK_MAGIC_SNAT_DONE) != MARK_MAGIC_SNAT_DONE) {
-		//printk("to-netdev is attached as a tc egress filter ENABLE_NODEPORT2\n");
+		//barry_printk("to-netdev is attached as a tc egress filter ENABLE_NODEPORT2\n");
 		/*
 		 * handle_nat_fwd tail calls in the majority of cases,
 		 * so control might never return to this program.
@@ -1104,14 +1104,14 @@ out:
 	}
 #endif
 #ifdef ENABLE_HEALTH_CHECK
-	//printk("to-netdev is attached as a tc egress filter ENABLE_HEALTH_CHECK\n")
+	//barry_printk("to-netdev is attached as a tc egress filter ENABLE_HEALTH_CHECK\n")
 	ret = lb_handle_health(ctx);
 	if (IS_ERR(ret))
 		return send_drop_notify_error(ctx, 0, ret, CTX_ACT_DROP,
 					      METRIC_EGRESS);
 #endif
 
-	//printk("to-netdev is attached as a tc egress filter TRACE_TO_NETWORK\n");
+	//barry_printk("to-netdev is attached as a tc egress filter TRACE_TO_NETWORK\n");
 	send_trace_notify(ctx, TRACE_TO_NETWORK, src_id, 0, 0,
 			  0, 0, monitor);
 
@@ -1131,7 +1131,7 @@ int to_host(struct __ctx_buff *ctx)
 	bool traced = false;
 	__u32 src_id = 0;
 
-	printk("to-host ingress from cilium_host devices\n");
+	barry_printk("to-host ingress from cilium_host devices\n");
 	trace_4_test2(ctx, true);
 
 	if ((magic & MARK_MAGIC_HOST_MASK) == MARK_MAGIC_ENCRYPT) {

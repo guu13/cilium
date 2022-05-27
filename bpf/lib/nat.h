@@ -531,7 +531,7 @@ static __always_inline __maybe_unused int snat_v4_process(struct __ctx_buff *ctx
 	switch (tuple.nexthdr) {
 	case IPPROTO_TCP:
 		if (ctx_load_bytes(ctx, off, &l4hdr2, sizeof(l4hdr2)) > 0)
-			printk("snat_v4_process srcport:%u, desport:%u\n", bpf_ntohs(l4hdr2.sport), bpf_ntohs(l4hdr2.dport));
+			barry_printk("snat_v4_process srcport:%u, desport:%u\n", bpf_ntohs(l4hdr2.sport), bpf_ntohs(l4hdr2.dport));
 	case IPPROTO_UDP:
 		if (ctx_load_bytes(ctx, off, &l4hdr, sizeof(l4hdr)) < 0)
 			return DROP_INVALID;
@@ -1141,13 +1141,13 @@ trace_4_test(struct  __ctx_buff *ctx, bool iflag )
 	if(iflag)
 	{
 		// ip4->saddr ;  ip4->daddr;
-		printk("ingress srcip:%u, desip:%u\n", bpf_htonl(ip4->saddr), bpf_htonl(ip4->daddr));
-		printk("ingress srcport:%u, desport:%u\n", bpf_ntohs(l4hdr.sport), bpf_ntohs(l4hdr.dport));
+		barry_printk("ingress srcip:%u, desip:%u\n", bpf_htonl(ip4->saddr), bpf_htonl(ip4->daddr));
+		barry_printk("ingress srcport:%u, desport:%u\n", bpf_ntohs(l4hdr.sport), bpf_ntohs(l4hdr.dport));
 	}
 	else
 	{
-		printk("egress srcip:%u, desip:%u\n", bpf_htonl(ip4->saddr), bpf_htonl(ip4->daddr));
-		printk("egress  srcport:%u, desport:%u\n", bpf_ntohs(l4hdr.sport), bpf_ntohs(l4hdr.dport));
+		barry_printk("egress srcip:%u, desip:%u\n", bpf_htonl(ip4->saddr), bpf_htonl(ip4->daddr));
+		barry_printk("egress  srcport:%u, desport:%u\n", bpf_ntohs(l4hdr.sport), bpf_ntohs(l4hdr.dport));
 	}
 	  
 };
@@ -1170,31 +1170,31 @@ trace_4_test2(struct  __ctx_buff *ctx, bool iflag )
 
 	if (data + ETH_HLEN > data_end)
 		return ;
-	printk("> ETH_HLEN");
+	barry_printk("> ETH_HLEN");
 	// IP proto
 	if (bpf_ntohs(eth->h_proto) != ETH_P_IP)
 		return;
-	printk("is eth proto");
+	barry_printk("is eth proto");
 	if (!revalidate_data(ctx, &data, &data_end, &ip4))
 		return ;
-	printk("revalidate_data is ok,");
+	barry_printk("revalidate_data is ok,");
 	if(ip4->protocol != IPPROTO_TCP && ip4->protocol != IPPROTO_UDP)
 		return;
-	printk("is tcp/udp proto,");
+	barry_printk("is tcp/udp proto,");
 	off = ((void *)ip4 - data) + ipv4_hdrlen(ip4);
 	if (ctx_load_bytes(ctx, off, &l4hdr, sizeof(l4hdr)) < 0)
 		return ;
-	printk("ctx_load_bytes is ok,");
+	barry_printk("ctx_load_bytes is ok,");
 	if(iflag)
 	{
 		// ip4->saddr ;  ip4->daddr;
-		printk("ingress srcip:%u, desip:%u\n", bpf_htonl(ip4->saddr), bpf_htonl(ip4->daddr));
-		printk("ingress srcport:%u, desport:%u\n", bpf_ntohs(l4hdr.sport), bpf_ntohs(l4hdr.dport));
+		barry_printk("ingress srcip:%u, desip:%u\n", bpf_htonl(ip4->saddr), bpf_htonl(ip4->daddr));
+		barry_printk("ingress srcport:%u, desport:%u\n", bpf_ntohs(l4hdr.sport), bpf_ntohs(l4hdr.dport));
 	}
 	else
 	{
-		printk("egress srcip:%u, desip:%u\n", bpf_htonl(ip4->saddr), bpf_htonl(ip4->daddr));
-		printk("egress  srcport:%u, desport:%u\n", bpf_ntohs(l4hdr.sport), bpf_ntohs(l4hdr.dport));
+		barry_printk("egress srcip:%u, desip:%u\n", bpf_htonl(ip4->saddr), bpf_htonl(ip4->daddr));
+		barry_printk("egress  srcport:%u, desport:%u\n", bpf_ntohs(l4hdr.sport), bpf_ntohs(l4hdr.dport));
 	}
 	  
 };

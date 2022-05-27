@@ -558,7 +558,7 @@ static __always_inline int handle_ipv4_from_lxc(struct __ctx_buff *ctx,
 	l4_off = l3_off + ipv4_hdrlen(ip4);
 
 #ifdef ENABLE_PER_PACKET_LB
-	printk("handle_ipv4_from_lxc ENABLE_PER_PACKET_LB");
+	barry_printk("handle_ipv4_from_lxc ENABLE_PER_PACKET_LB");
 	{
 		struct lb4_service *svc;
 		struct lb4_key key = {};
@@ -571,7 +571,7 @@ static __always_inline int handle_ipv4_from_lxc(struct __ctx_buff *ctx,
 			else
 				return ret;
 		}
-		printk("handle_ipv4_from_lxc ENABLE_PER_PACKET_LB");
+		barry_printk("handle_ipv4_from_lxc ENABLE_PER_PACKET_LB");
 		svc = lb4_lookup_service(&key, is_defined(ENABLE_NODEPORT));
 		if (svc) {
 			ret = lb4_local(get_ct_map4(&tuple), ctx, l3_off, l4_off,
@@ -581,7 +581,7 @@ static __always_inline int handle_ipv4_from_lxc(struct __ctx_buff *ctx,
 				return ret;
 			hairpin_flow |= ct_state_new.loopback;
 		}
-		printk("handle_ipv4_from_lxc lb4_lookup_service");
+		barry_printk("handle_ipv4_from_lxc lb4_lookup_service");
 	}
 
 skip_service_lookup:
@@ -940,8 +940,8 @@ int tail_handle_ipv4(struct __ctx_buff *ctx)
 			       REASON_MISSED_CUSTOM_CALL);
 	}
 #endif
-	printk("end tail_handle_ipv4 srcip:%u, desip:%u\n", bpf_htonl(ip4->saddr), bpf_htonl(ip4->daddr));
-	printk("end tail_handle_ipv4 srcport:%u, desport:%u\n", bpf_ntohs(l4hdr.sport), bpf_ntohs(l4hdr.dport));
+	// barry_printk("end tail_handle_ipv4 srcip:%u, desip:%u\n", bpf_htonl(ip4->saddr), bpf_htonl(ip4->daddr));
+	// barry_printk("end tail_handle_ipv4 srcport:%u, desport:%u\n", bpf_ntohs(l4hdr.sport), bpf_ntohs(l4hdr.dport));
 	return ret;
 }
 
@@ -989,14 +989,14 @@ int handle_xgress(struct __ctx_buff *ctx)
 	__u16 proto;
 	int ret;
 
-	printk("from-container egress from container veth devices \n");
+	barry_printk("from-container egress from container veth devices \n");
 	//trace_4_test(ctx, false);
 
 	bpf_clear_meta(ctx);
-	//printk("from-container egress from container veth devices bpf_clear_meta\n");
+	//barry_printk("from-container egress from container veth devices bpf_clear_meta\n");
 	reset_queue_mapping(ctx);
 	
-	//printk("from-container egress from container veth devices reset_queue_mapping\n");
+	//barry_printk("from-container egress from container veth devices reset_queue_mapping\n");
 
 	send_trace_notify(ctx, TRACE_FROM_LXC, SECLABEL, 0, 0, 0, 0,
 			  TRACE_PAYLOAD_LEN);
@@ -1007,7 +1007,7 @@ int handle_xgress(struct __ctx_buff *ctx)
 		goto out;
 	}
 
-	//printk("from-container egress from container veth devices validate_ethertype\n");
+	//barry_printk("from-container egress from container veth devices validate_ethertype\n");
 
 	switch (proto) {
 #ifdef ENABLE_IPV6
@@ -1020,7 +1020,7 @@ int handle_xgress(struct __ctx_buff *ctx)
 #endif /* ENABLE_IPV6 */
 #ifdef ENABLE_IPV4
 	case bpf_htons(ETH_P_IP):
-		printk("from-container egress from container veth devices ipv4\n");
+		barry_printk("from-container egress from container veth devices ipv4\n");
 		edt_set_aggregate(ctx, LXC_ID);
 		invoke_tailcall_if(__or3(is_defined(ENABLE_IPV4), is_defined(ENABLE_IPV6),
 					 is_defined(DEBUG)),
@@ -1746,7 +1746,7 @@ int handle_to_container(struct __ctx_buff *ctx)
 	__u32 identity = 0;
 	__u16 proto;
 	
-	printk("to-container Attached to the lxc device on the way to the container, only if endpoint routes are enabled \n");
+	barry_printk("to-container Attached to the lxc device on the way to the container, only if endpoint routes are enabled \n");
 	trace_4_test(ctx, true);
 
 	if (!validate_ethertype(ctx, &proto)) {
